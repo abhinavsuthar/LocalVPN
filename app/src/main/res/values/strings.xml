@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AndroidVPN</string>
+    <string name="start_vpn">Start VPN</string>
+</resources>
