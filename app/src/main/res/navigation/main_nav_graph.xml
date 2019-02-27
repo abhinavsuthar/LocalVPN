@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_nav_graph">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/homeFragment">
 
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.vpn.ui.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_appInternetAccessFragment"
+            app:destination="@id/appInternetAccessFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_firewallFragment"
+            app:destination="@id/firewallFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/appInternetAccessFragment"
+        android:name="com.vpn.ui.AppInternetAccessFragment"
+        android:label="App List"
+        tools:layout="@layout/fragment_app_internet_access" />
+    <fragment
+        android:id="@+id/firewallFragment"
+        android:name="com.vpn.ui.FirewallFragment"
+        android:label="fragment_firewall"
+        tools:layout="@layout/fragment_firewall" />
 </navigation>

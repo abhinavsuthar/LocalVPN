@@ -1,8 +1,13 @@
-package com.vpn
+package com.vpn.services
 
+import android.content.Context
 import android.net.VpnService
+import android.net.wifi.WifiManager
 import android.os.ParcelFileDescriptor
+import android.text.format.Formatter
 import android.util.Log
+import com.vpn.ByteBufferPool
+import com.vpn.Packet
 import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -66,17 +71,17 @@ class MyVpnService : VpnService() {
 
     private fun connectVPN2() {
 
+        val wm = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val ip = Formatter.formatIpAddress(wm.connectionInfo.ipAddress)
+
         val builder = Builder()
 
         val localTunnel: ParcelFileDescriptor = builder
-            .addAddress("localhost", 24)
+            .addAddress(ip, 24)
             .addRoute("0.0.0.0", 0)
             .addDnsServer("8.8.8.8")
+            .setMtu(1500)
             .establish()
-
-
-        Log.d("suthar", localTunnel.fd.toString())
-        Log.d("suthar", localTunnel.fileDescriptor.toString())
 
 
         val vpnFileDescriptor = localTunnel.fileDescriptor
@@ -84,15 +89,56 @@ class MyVpnService : VpnService() {
         test(vpnFileDescriptor)
     }
 
+    private fun test(descriptor: FileDescriptor?) {
+        val mIn = FileInputStream(descriptor)
+        val mOut = FileOutputStream(descriptor)
+
+        val tunnel = DatagramChannel.open()
+        tunnel.connect(InetSocketAddress("10.0.0.1", 8080))
+        tunnel.configureBlocking(false)
+        protect(tunnel.socket())
+
+        while (true) {
+
+            val packet = ByteBuffer.allocate(65535)
+
+            val length = mIn.read(packet.array())
+
+            if (length != -1 && length > 0) {
+                packet.limit(length) // filled till that pos
+
+                // Do read from packet buffer
+                // then, packet.clear() or packet.compact() to read again.
+
+                // packet.flip()   // No more writes, make it ready for reading
+                tunnel.write(packet)
+                packet.clear()
+
+                val x = tunnel.receive(packet)
+                Log.d(tag, x?.toString() ?: "")
+
+                mOut.write(packet.array(), 0, length)
+                packet.clear()
+
+                /*val x = Packet(packet)
+                Log.d(tag, x.toString())
+                packet.clear()*/
+            }
+
+            Thread.sleep(100)
+        }
+
+    }
+
     private val deviceToNetworkUDPQueue by lazy { ConcurrentLinkedQueue<Packet>() }
-    private val deviceToNetworkTCPQueueby by lazy { ConcurrentLinkedQueue<Packet>() }
+    private val deviceToNetworkTCPQueue by lazy { ConcurrentLinkedQueue<Packet>() }
     private val networkToDeviceQueue by lazy { ConcurrentLinkedQueue<Packet>() }
     private val executorService by lazy { Executors.newFixedThreadPool(5) }
 
     private val udpSelector by lazy { Selector.open() }
     private val tcpSelector by lazy { Selector.open() }
 
-    private fun test(vpnFileDescriptor: FileDescriptor) {
+    private fun test_(vpnFileDescriptor: FileDescriptor) {
         Thread {
 
             val vpnInput = FileInputStream(vpnFileDescriptor).channel
@@ -114,33 +160,37 @@ class MyVpnService : VpnService() {
                         dataSent = true
                         bufferToNetwork?.flip()
                         val packet = Packet(bufferToNetwork)
-                        if (packet.isUDP) {
-                            Log.d(tag, "UDP packet")
-                            // deviceToNetworkUDPQueue.offer(packet)
-                        } else if (packet.isTCP) {
-                            Log.d(tag, "TCP packet")
-                            // deviceToNetworkTCPQueue.offer(packet)
-                        } else {
-                            Log.w(tag, "Unknown packet type")
-                            Log.w(tag, packet.ip4Header.toString())
-                            dataSent = false
+                        when {
+                            packet.isUDP -> {
+                                Log.d(tag, "UDP packet")
+                                deviceToNetworkUDPQueue.offer(packet)
+                            }
+                            packet.isTCP -> {
+                                Log.d(tag, "TCP packet")
+                                deviceToNetworkTCPQueue.offer(packet)
+                            }
+                            else -> {
+                                Log.w(tag, "Unknown packet type")
+                                Log.w(tag, packet.ip4Header.toString())
+                                dataSent = false
+                            }
                         }
                         Log.w(tag, packet.ip4Header.toString())
                     } else {
                         dataSent = false
                     }
 
-                    /*val bufferFromNetwork = networkToDeviceQueue.poll()
+                    val bufferFromNetwork = networkToDeviceQueue.poll().backingBuffer
                     if (bufferFromNetwork != null) {
-                        bufferFromNetwork!!.flip()
-                        while (bufferFromNetwork!!.hasRemaining())
+                        bufferFromNetwork.flip()
+                        while (bufferFromNetwork.hasRemaining())
                             vpnOutput.write(bufferFromNetwork)
                         dataReceived = true
 
                         ByteBufferPool.release(bufferFromNetwork)
                     } else {
                         dataReceived = false
-                    }*/
+                    }
 
                     // TODO: Sleep-looping is not very battery-friendly, consider blocking instead
                     // Confirm if throughput with ConcurrentQueue is really higher compared to BlockingQueue
