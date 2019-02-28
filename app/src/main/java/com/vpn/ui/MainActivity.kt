@@ -13,6 +13,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findNavController(R.id.nav_host_fragment).navigate(R.id.action_homeFragment_to_appInternetAccessFragment)
+        // findNavController(R.id.nav_host_fragment).navigate(R.id.action_homeFragment_to_appInternetAccessFragment)
     }
 }

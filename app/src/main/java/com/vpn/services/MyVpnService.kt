@@ -86,7 +86,7 @@ class MyVpnService : VpnService() {
 
         val vpnFileDescriptor = localTunnel.fileDescriptor
 
-        test(vpnFileDescriptor)
+        test_(vpnFileDescriptor)
     }
 
     private fun test(descriptor: FileDescriptor?) {
@@ -180,7 +180,7 @@ class MyVpnService : VpnService() {
                         dataSent = false
                     }
 
-                    val bufferFromNetwork = networkToDeviceQueue.poll().backingBuffer
+                    /*val bufferFromNetwork = networkToDeviceQueue.poll().backingBuffer
                     if (bufferFromNetwork != null) {
                         bufferFromNetwork.flip()
                         while (bufferFromNetwork.hasRemaining())
@@ -190,7 +190,7 @@ class MyVpnService : VpnService() {
                         ByteBufferPool.release(bufferFromNetwork)
                     } else {
                         dataReceived = false
-                    }
+                    }*/
 
                     // TODO: Sleep-looping is not very battery-friendly, consider blocking instead
                     // Confirm if throughput with ConcurrentQueue is really higher compared to BlockingQueue

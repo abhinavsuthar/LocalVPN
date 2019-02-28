@@ -2,7 +2,6 @@ package com.vpn.ui.adapter
 
 import android.content.Context
 import android.content.pm.PackageInfo
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +27,7 @@ class AppListAdapter(private val model: RuleViewModel) : RecyclerView.Adapter<Ap
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bindDate(position)
+        holder.bindData(position)
     }
 
     fun setData(list: List<Rule>) {
@@ -43,9 +42,10 @@ class AppListAdapter(private val model: RuleViewModel) : RecyclerView.Adapter<Ap
         private val mobile: ImageView = view.findViewById(R.id.mobile)
         private val wifi: ImageView = view.findViewById(R.id.wifi)
 
-        fun bindDate(position: Int) {
+        fun bindData(position: Int) {
 
             val rule = list[position]
+
             name.text = rule.name
             if (rule.info != null) icon.setImageDrawable(getIcon(rule.info))
 

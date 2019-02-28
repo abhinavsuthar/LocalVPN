@@ -2,6 +2,8 @@ package com.vpn.db.repository
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.preference.PreferenceManager
 import com.vpn.MyApp
 import com.vpn.db.model.Rule
@@ -31,7 +33,7 @@ class RulesRepository {
         val wlOther = prefs.getBoolean("whitelist_other", true)
 
         val list = ArrayList<Rule>()
-        for (info in context.packageManager.getInstalledPackages(0)) {
+        for (info in context.packageManager.getInstalledPackages(PackageManager.GET_ACTIVITIES)) {
             val name = info.applicationInfo.loadLabel(pm).toString()
             val system = info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM !== 0
             // if (system) continue
