@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_homeFragment_to_firewallFragment"
             app:destination="@id/firewallFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_webBrowserFragment2"
+            app:destination="@id/webBrowserFragment" />
     </fragment>
     <fragment
         android:id="@+id/appInternetAccessFragment"
@@ -27,4 +30,18 @@
         android:name="com.vpn.ui.FirewallFragment"
         android:label="fragment_firewall"
         tools:layout="@layout/fragment_firewall" />
+    <fragment
+        android:id="@+id/webBrowserFragment"
+        android:name="com.vpn.ui.WebBrowserFragment"
+        android:label="fragment_web_brower"
+        tools:layout="@layout/fragment_web_brower" >
+        <action
+            android:id="@+id/action_webBrowserFragment_to_IPFilterFragment"
+            app:destination="@id/IPFilterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/IPFilterFragment"
+        android:name="com.vpn.ui.IPFilterFragment"
+        android:label="fragment_ipfilter"
+        tools:layout="@layout/fragment_ipfilter" />
 </navigation>

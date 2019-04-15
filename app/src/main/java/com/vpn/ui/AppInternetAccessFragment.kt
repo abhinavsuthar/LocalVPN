@@ -39,8 +39,8 @@ class AppInternetAccessFragment : Fragment() {
 
         model.rules.observe(this, Observer {
             adapter.setData(it)
-
             prepare()
+            progressBar.hide()
         })
     }
 
