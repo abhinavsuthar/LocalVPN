@@ -40,7 +40,7 @@ class HomeFragment : Fragment() {
 
     private fun animateImage() {
         Glide.with(this)
-            .load(R.drawable.sumitk)
+            .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSduys3Z_AhRMSV3aB3WXsqml9oX6tZRWY9OT6-nvmIn0g8OSBuw")
             .apply(RequestOptions.circleCropTransform())
             .into(image)
         /*val anim = RotateAnimation(0f, 350f, 15f, 15f)

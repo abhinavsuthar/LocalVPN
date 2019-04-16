@@ -19,11 +19,6 @@ class InternetAccessVpnService : VpnService() {
     private val tag = "suthar"
     private val model by lazy { model0 }
 
-    override fun onCreate() {
-        super.onCreate()
-
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         vpnStart()
         return Service.START_STICKY
@@ -73,5 +68,13 @@ class InternetAccessVpnService : VpnService() {
             null
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Intent(this, InternetAccessVpnService::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startService(this)
+        }
     }
 }

@@ -17,7 +17,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/firewall_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
+        style="?android:attr/borderlessButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Firewall Browser"
@@ -27,7 +27,7 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/access_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
+        style="?android:attr/borderlessButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Internet Access"
